@@ -1,0 +1,23 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "Cloud Printing Solution",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dep9996677/eatprinter.git"
+  },
+  "author": "Robert Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dep9996677/eatprinter/issues"
+  },
+  "homepage": "https://github.com/dep9996677/eatprinter#readme",
+  "dependencies": {
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^6.0.0"
+  }
+}
