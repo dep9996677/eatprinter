@@ -1,11 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 const crypto = require('crypto');
-
-admin.initializeApp();
 
 // Your client secret from Uber. In a real-world scenario, this should be stored securely,
 // such as in Firebase Config or Secret Manager.
@@ -20,20 +15,20 @@ function validateSignature(body, signature) {
 exports.uberNotificationWebhook = functions.https.onRequest(async (req, res) => {
   // Check if the request method is POST
   if (req.method !== 'POST') {
-    res.status(405).json({ code: 'ERROR', message: 'Method Not Allowed' });
+    res.status(405).send('Method Not Allowed');
     return;
   }
 
   // Validate the Uber signature
   const signature = req.get('X-Uber-Signature');
   if (!signature) {
-    res.status(401).json({ code: 'ERROR', message: 'Missing signature' });
+    res.status(401).send('Missing signature');
     return;
   }
 
   const rawBody = JSON.stringify(req.body);
   if (!validateSignature(rawBody, signature)) {
-    res.status(401).json({ code: 'ERROR', message: 'Invalid signature' });
+    res.status(401).send('Invalid signature');
     return;
   }
 
@@ -45,20 +40,13 @@ exports.uberNotificationWebhook = functions.https.onRequest(async (req, res) => 
     notificationData.timestamp = admin.firestore.FieldValue.serverTimestamp();
 
     // Save the notification data to the 'uberNotification' collection
-    const writeResult = await admin.firestore().collection('uberNotification').add(notificationData);
+    await admin.firestore().collection('uberNotification').add(notificationData);
 
-    // Send a success response with the document ID and a success code
-    res.status(200).json({ 
-      code: 'SUCCESS',
-      message: `Notification saved successfully`,
-      notificationId: writeResult.id
-    });
+    // Send an empty response with 200 status code for success
+    res.status(200).send();
   } catch (error) {
     console.error('Error saving notification:', error);
-    res.status(500).json({ 
-      code: 'ERROR',
-      message: 'Error saving notification',
-      error: error.message
-    });
+    // For errors, we'll still send an empty response with a 500 status code
+    res.status(500).send();
   }
 });
